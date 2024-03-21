@@ -1,4 +1,4 @@
-QT += core gui core-private gui-private
+QT += core gui gui-private
 QT += widgets
 CONFIG += c++11
 
