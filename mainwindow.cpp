@@ -4,6 +4,9 @@
 #include <QFile>
 #include <QIODevice>
 #include <QOpenGLPixelTransferOptions>
+#include <private/qtexturefilereader_p.h>
+#include <private/qtexturefiledata_p.h>
+#include <private/qtexturefilehandler_p.h>
 
 namespace  {
 QOpenGLVertexArrayObject datalessVao;
@@ -48,8 +51,17 @@ OpenGLWindow::OpenGLWindow()
     m_image = m_image.mirrored(false, true);
 //    QFile f(":/mtest4x4.astc");
     QFile f(":/Earth-Night4x4.astc"); // from https://github.com/ARM-software/opengl-es-sdk-for-android/tree/master/samples/advanced_samples/AstcTextures/assets
-    f.open(QIODevice::ReadOnly);
-    m_astc = f.readAll();
+    bool res = f.open(QIODevice::ReadOnly);
+    if (!res) {
+        qWarning()<<"Failed opening " <<f.fileName();
+    }
+    QTextureFileReader fr(&f);
+    if (!fr.canRead())
+        qWarning()<<"TFR cannot read texture!";
+
+    m_astc = fr.read();
+
+//    m_astc = f.readAll();
     f.close();
 }
 
@@ -110,27 +122,27 @@ void OpenGLWindow::paintGL()
         printGLError(f, __LINE__);
         m_texASTC->setAutoMipMapGenerationEnabled(false);
         printGLError(f, __LINE__);
-        m_texASTC->setSize(astcSize.width(), astcSize.height());
+        m_texASTC->setSize(m_astc.size().width(), m_astc.size().height());
         printGLError(f, __LINE__);
         m_texASTC->allocateStorage();
         printGLError(f, __LINE__);
         QOpenGLPixelTransferOptions uploadOptions;
         uploadOptions.setAlignment(1);
-        m_texASTC->setCompressedData(m_astc.size(), m_astc.constData(), &uploadOptions);
+        m_texASTC->setCompressedData(m_astc.dataLength(), m_astc.data().constData(), &uploadOptions);
         printGLError(f, __LINE__);
 
         f->glGenTextures(1, &m_nativeTexASTC);
         printGLError(f, __LINE__);
+        f->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         f->glBindTexture(GL_TEXTURE_2D, m_nativeTexASTC);
         f->glCompressedTexImage2D(GL_TEXTURE_2D,
                                     0,
-                                    GL_COMPRESSED_RGBA_ASTC_4x4_KHR,
-//                                    GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
+                                    m_astc.glFormat(),
                                     astcSize.width(),
                                     astcSize.height(),
                                     0,
-                                    m_astc.size(),
-                                    (const GLvoid*) m_astc.constData());
+                                    m_astc.dataLength(),
+                                    (const GLvoid*) m_astc.data().constData());
         printGLError(f, __LINE__);
     }
     m_shader->bind();

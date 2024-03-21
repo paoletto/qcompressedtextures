@@ -16,7 +16,7 @@
 #include <QMatrix4x4>
 #include <QStaticText>
 #include <QKeyEvent>
-
+#include <private/qtexturefiledata_p.h>
 
 class OpenGLWindow : public QOpenGLWindow
 {
@@ -36,7 +36,7 @@ protected:
     QScopedPointer<QOpenGLTexture> m_tex;
     QScopedPointer<QOpenGLTexture> m_texASTC;
     QImage m_image;
-    QByteArray m_astc;
+    QTextureFileData m_astc;
     GLuint m_nativeTexASTC{0};
 };
 
