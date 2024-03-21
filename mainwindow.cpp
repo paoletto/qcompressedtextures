@@ -117,7 +117,7 @@ void OpenGLWindow::paintGL()
         m_texASTC->setMinMagFilters(QOpenGLTexture::LinearMipMapLinear,
                                      QOpenGLTexture::Linear);
         printGLError(f, __LINE__);
-        m_texASTC->setFormat(QOpenGLTexture::RGBA_ASTC_4x4);
+        m_texASTC->setFormat(QOpenGLTexture::TextureFormat(m_astc.glInternalFormat()));
 //        m_texASTC->setFormat(QOpenGLTexture::RGBA_ASTC_6x5);
         printGLError(f, __LINE__);
         m_texASTC->setAutoMipMapGenerationEnabled(false);
