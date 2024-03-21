@@ -53,6 +53,17 @@ OpenGLWindow::OpenGLWindow()
     f.close();
 }
 
+namespace {
+void printGLError(QOpenGLFunctions *f, int line) {
+    GLenum err;
+    while((err = f->glGetError()) != GL_NO_ERROR)
+    {
+      // Process/log the error.
+        qDebug() << "GLERROR("<<line<<"): " << err;
+    }
+}
+}
+
 void OpenGLWindow::paintGL()
 {
 
@@ -90,26 +101,26 @@ void OpenGLWindow::paintGL()
         astcSize = QSize(1024,512);
         m_texASTC.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
         m_texASTC->setMaximumAnisotropy(16);
-        auto error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         m_texASTC->setMinMagFilters(QOpenGLTexture::LinearMipMapLinear,
                                      QOpenGLTexture::Linear);
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         m_texASTC->setFormat(QOpenGLTexture::RGBA_ASTC_4x4);
 //        m_texASTC->setFormat(QOpenGLTexture::RGBA_ASTC_6x5);
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         m_texASTC->setAutoMipMapGenerationEnabled(false);
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         m_texASTC->setSize(astcSize.width(), astcSize.height());
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         m_texASTC->allocateStorage();
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         QOpenGLPixelTransferOptions uploadOptions;
         uploadOptions.setAlignment(1);
         m_texASTC->setCompressedData(m_astc.size(), m_astc.constData(), &uploadOptions);
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
 
         f->glGenTextures(1, &m_nativeTexASTC);
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
         f->glBindTexture(GL_TEXTURE_2D, m_nativeTexASTC);
         f->glCompressedTexImage2D(GL_TEXTURE_2D,
                                     0,
@@ -120,7 +131,7 @@ void OpenGLWindow::paintGL()
                                     0,
                                     m_astc.size(),
                                     (const GLvoid*) m_astc.constData());
-        error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
+        printGLError(f, __LINE__);
     }
     m_shader->bind();
     f->glEnable(GL_TEXTURE_2D);
