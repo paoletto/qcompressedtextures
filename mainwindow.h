@@ -37,7 +37,6 @@ protected:
     QScopedPointer<QOpenGLTexture> m_texASTC;
     QImage m_image;
     QTextureFileData m_astc;
-    GLuint m_nativeTexASTC{0};
 };
 
 #endif // MAINWINDOW_H

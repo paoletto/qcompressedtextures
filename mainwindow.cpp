@@ -130,20 +130,6 @@ void OpenGLWindow::paintGL()
         uploadOptions.setAlignment(1);
         m_texASTC->setCompressedData(m_astc.dataLength(), m_astc.data().constData(), &uploadOptions);
         printGLError(f, __LINE__);
-
-        f->glGenTextures(1, &m_nativeTexASTC);
-        printGLError(f, __LINE__);
-        f->glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        f->glBindTexture(GL_TEXTURE_2D, m_nativeTexASTC);
-        f->glCompressedTexImage2D(GL_TEXTURE_2D,
-                                    0,
-                                    m_astc.glFormat(),
-                                    astcSize.width(),
-                                    astcSize.height(),
-                                    0,
-                                    m_astc.dataLength(),
-                                    (const GLvoid*) m_astc.data().constData());
-        printGLError(f, __LINE__);
     }
     m_shader->bind();
     f->glEnable(GL_TEXTURE_2D);
