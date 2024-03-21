@@ -47,7 +47,7 @@ OpenGLWindow::OpenGLWindow()
     m_image.load(":/mtest.png");
     m_image = m_image.mirrored(false, true);
 //    QFile f(":/mtest4x4.astc");
-    QFile f(":/mandrill_128x128_4x4.astc"); // from https://gerrit.aospa.co/plugins/gitiles/AOSPA/android_external_skia/+/164a9f061c5186ae931cc23a3c73f32472e80ff5/resources/mandrill_128x128_4x4.astc
+    QFile f(":/Earth-Night4x4.astc"); // from https://github.com/ARM-software/opengl-es-sdk-for-android/tree/master/samples/advanced_samples/AstcTextures/assets
     f.open(QIODevice::ReadOnly);
     m_astc = f.readAll();
     f.close();
@@ -87,7 +87,7 @@ void OpenGLWindow::paintGL()
 
 
         QSize astcSize = m_image.size();
-        astcSize = QSize(128,128);
+        astcSize = QSize(1024,512);
         m_texASTC.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
         m_texASTC->setMaximumAnisotropy(16);
         auto error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
