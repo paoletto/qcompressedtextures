@@ -46,7 +46,8 @@ OpenGLWindow::OpenGLWindow()
     setGeometry(300, 300, 500, 500);
     m_image.load(":/mtest.png");
     m_image = m_image.mirrored(false, true);
-    QFile f(":/mtest4x4.astc");
+//    QFile f(":/mtest4x4.astc");
+    QFile f(":/mandrill_128x128_4x4.astc"); // from https://gerrit.aospa.co/plugins/gitiles/AOSPA/android_external_skia/+/164a9f061c5186ae931cc23a3c73f32472e80ff5/resources/mandrill_128x128_4x4.astc
     f.open(QIODevice::ReadOnly);
     m_astc = f.readAll();
     f.close();
@@ -85,6 +86,8 @@ void OpenGLWindow::paintGL()
         m_tex->setData(m_image);
 
 
+        QSize astcSize = m_image.size();
+        astcSize = QSize(128,128);
         m_texASTC.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
         m_texASTC->setMaximumAnisotropy(16);
         auto error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
@@ -92,10 +95,11 @@ void OpenGLWindow::paintGL()
                                      QOpenGLTexture::Linear);
         error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
         m_texASTC->setFormat(QOpenGLTexture::RGBA_ASTC_4x4);
+//        m_texASTC->setFormat(QOpenGLTexture::RGBA_ASTC_6x5);
         error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
         m_texASTC->setAutoMipMapGenerationEnabled(false);
         error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
-        m_texASTC->setSize(m_image.width(), m_image.height());
+        m_texASTC->setSize(astcSize.width(), astcSize.height());
         error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
         m_texASTC->allocateStorage();
         error = f->glGetError(); if (error != GL_NO_ERROR) qDebug() << "GLERROR("<<__LINE__<<"): " << error;
@@ -110,8 +114,9 @@ void OpenGLWindow::paintGL()
         f->glCompressedTexImage2D(GL_TEXTURE_2D,
                                     0,
                                     GL_COMPRESSED_RGBA_ASTC_4x4_KHR,
-                                    m_image.width(),
-                                    m_image.height(),
+//                                    GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
+                                    astcSize.width(),
+                                    astcSize.height(),
                                     0,
                                     m_astc.size(),
                                     (const GLvoid*) m_astc.constData());

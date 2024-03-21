@@ -1,5 +1,5 @@
 
-Attempt to load and sample ASTC compressed textures.
+Attempt to load and sample ASTC compressed textures. The project depends only on Qt5(.15).
  
 mtest4x4.astc generated using ARM compressor with `./astcenc-native -cl mtest.png mtest4x4.astc 4x4 -thorough`
 
@@ -24,6 +24,7 @@ GL_KHR_texture_compression_astc_ldr,
 GL_KHR_texture_compression_astc_sliced_3d, GL_MESA_framebuffer_flip_y, 
 GL_KHR_robustness, GL_KHR_texture_compression_astc_ldr, 
 GL_KHR_texture_compression_astc_sliced_3d, GL_MESA_bgra, 
+[...]
 ```
 
 with
