@@ -64,6 +64,7 @@ OpenGLWindow::OpenGLWindow()
     m_image = m_image.mirrored(false, true);
 //    QFile f(":/mtest4x4.astc");
     QFile f(":/Earth-Night4x4.astc"); // from https://github.com/ARM-software/opengl-es-sdk-for-android/tree/master/samples/advanced_samples/AstcTextures/assets
+//    QFile f("/tmp/tile_good.astc");
     bool res = f.open(QIODevice::ReadOnly);
     if (!res) {
         qWarning()<<"Failed opening " <<f.fileName();
@@ -122,8 +123,8 @@ void OpenGLWindow::paintGL()
         m_tex->setData(m_image);
 
 
-        QSize astcSize = m_image.size();
-        astcSize = QSize(1024,512);
+//        QSize astcSize = m_image.size();
+//        astcSize = QSize(1024,512);
         m_texASTC.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
         m_texASTC->setMaximumAnisotropy(16);
         printGLError(f, __LINE__);
@@ -141,7 +142,7 @@ void OpenGLWindow::paintGL()
         printGLError(f, __LINE__);
         QOpenGLPixelTransferOptions uploadOptions;
         uploadOptions.setAlignment(1);
-        m_texASTC->setCompressedData(m_astc.dataLength(), m_astc.data().constData(), &uploadOptions);
+        m_texASTC->setCompressedData(m_astc.dataLength(), m_astc.data().constData() + m_astc.dataOffset(), &uploadOptions);
         printGLError(f, __LINE__);
     }
     m_shader->bind();
